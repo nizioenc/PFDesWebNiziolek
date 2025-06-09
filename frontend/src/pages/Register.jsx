@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import '../styles/Register.css';
 
 const Register = () => {
@@ -8,6 +8,7 @@ const Register = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [mensaje, setMensaje] = useState('');
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -31,10 +32,7 @@ const Register = () => {
       if (!res.ok) {
         setError(data.message || 'Error al registrar');
       } else {
-        setMensaje('Registro exitoso. Ahora puedes iniciar sesión.');
-        setEmail('');
-        setPassword('');
-        setConfirmPassword('');
+      navigate('/', { state: { successMessage: 'Usuario registrado correctamente' } });
       }
     } catch (err) {
       setError('Error de conexión con el servidor');

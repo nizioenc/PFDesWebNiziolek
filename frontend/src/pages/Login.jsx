@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import '../styles/Login.css';
 
 const Login = ({ onLogin }) => {
@@ -7,6 +7,10 @@ const Login = ({ onLogin }) => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate(); 
+  const location = useLocation();
+  const successMessage = location.state?.successMessage || '';
+  const [showSuccess, setShowSuccess] = useState(!!successMessage);
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -36,8 +40,20 @@ const Login = ({ onLogin }) => {
     navigate('/register');
   };
 
+  useEffect(() => {
+  if (successMessage) {
+    const timer = setTimeout(() => setShowSuccess(false), 3000);
+    return () => clearTimeout(timer);
+  }
+}, [successMessage]);
 
-  return (
+
+return (
+  <>
+    {showSuccess && (
+      <div className="success-alert">{successMessage}</div>
+    )}
+
     <div className="login-container">
       <form onSubmit={handleSubmit} className="login-form">
         <h2>Iniciar Sesión</h2>
@@ -63,11 +79,13 @@ const Login = ({ onLogin }) => {
         <button type="submit">Ingresar</button>
       </form>
 
-            <button className="register-btn" onClick={goToRegister}>
+      <button className="register-btn" onClick={goToRegister}>
         Crear Cuenta Nueva
       </button>
     </div>
-  );
+  </>
+);
+
 };
 
 export default Login;
