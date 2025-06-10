@@ -4,7 +4,7 @@ const cors = require('cors');
 require('dotenv').config();
 
 const authRoutes = require('./routes/auth');
-//const taskRoutes = require('./routes/tasks');
+const taskRoutes = require('./routes/taskRoutes');
 
 const app = express();
 
@@ -16,7 +16,7 @@ mongoose.connect(process.env.MONGO_URI)
   .catch(err => console.error('Error al conectar a MongoDB:', err));
 
 app.use('/api/auth', authRoutes);
-//app.use('/api/tasks', taskRoutes);
+app.use('/api/tasks', taskRoutes);
 
 const PORT = process.env.PORT || 5000;
 
