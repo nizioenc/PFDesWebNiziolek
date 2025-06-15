@@ -30,7 +30,7 @@ const Login = ({ onLogin }) => {
       } else {
         localStorage.setItem('token', data.token);
         onLogin && onLogin();
-        navigate('/tasks'); 
+        navigate('/lists'); 
       }
     } catch (err) {
       setError('Error de conexión con el servidor');

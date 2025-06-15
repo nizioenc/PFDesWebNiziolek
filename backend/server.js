@@ -5,6 +5,7 @@ require('dotenv').config();
 
 const authRoutes = require('./routes/auth');
 const taskRoutes = require('./routes/taskRoutes');
+const listRoutes = require('./routes/listRoutes');
 
 const app = express();
 
@@ -17,6 +18,7 @@ mongoose.connect(process.env.MONGO_URI)
 
 app.use('/api/auth', authRoutes);
 app.use('/api/tasks', taskRoutes);
+app.use('/api/lists', listRoutes);
 
 const PORT = process.env.PORT || 5000;
 

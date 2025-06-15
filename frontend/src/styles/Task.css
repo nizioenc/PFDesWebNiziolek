@@ -1,9 +1,9 @@
 .login-container {
   width: 90vw;          /* Ocupa 90% del ancho de la pantalla */
   max-width: 700px;     /* Máximo ancho para que no sea gigante en pantallas grandes */
-  min-height: 80vh;     /* Ocupa 80% de la altura viewport */
-  margin: 20px auto;    /* Centrado horizontal con espacio arriba y abajo */
-  padding: 30px 40px;   /* Más espacio interno */
+  min-height: 80vh;    
+  margin: 20px auto;   
+  padding: 30px 40px;  
   background-color: #fff;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
@@ -27,4 +27,213 @@
 .login-container > button {
   font-size: 1rem;
   padding: 10px 0;
+}
+
+.task-container {
+  width: 90vw;
+  max-width: 800px;
+  min-height: 80vh;
+  margin: 20px auto;
+  padding: 30px;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.task-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.task-header h2 {
+  margin: 0;
+  color: #333;
+}
+
+.back-btn {
+  padding: 8px 16px;
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.back-btn:hover {
+  background-color: #5a6268;
+}
+
+.task-form {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 30px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.task-form h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.task-form select,
+.task-form input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.task-form button {
+  width: 100%;
+  padding: 12px;
+  background-color: #555;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.task-form button:hover {
+  background-color: #444;
+}
+
+.tasks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.task-card {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.task-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.task-card.completed {
+  opacity: 0.7;
+}
+
+.task-card.completed h3 {
+  text-decoration: line-through;
+  color: #6c757d;
+}
+
+.task-content {
+  margin-bottom: 15px;
+}
+
+.task-content h3 {
+  margin: 0 0 10px;
+  color: #333;
+}
+
+.task-content p {
+  color: #666;
+  margin: 0 0 10px;
+}
+
+.task-list-tag {
+  display: inline-block;
+  padding: 4px 8px;
+  background-color: #e9ecef;
+  color: #495057;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.task-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.task-actions button {
+  flex: 1;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+  min-width: 100px;
+}
+
+.complete-btn {
+  background-color: #28a745;
+  color: white;
+}
+
+.complete-btn:hover {
+  background-color: #218838;
+}
+
+.edit-btn {
+  background-color: #ffc107;
+  color: #000;
+}
+
+.edit-btn:hover {
+  background-color: #e0a800;
+}
+
+.delete-btn {
+  background-color: #dc3545;
+  color: white;
+}
+
+.delete-btn:hover {
+  background-color: #c82333;
+}
+
+.logout-btn {
+  display: block;
+  margin: 40px auto 0;
+  padding: 10px 20px;
+  background: transparent;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  font-size: 0.9rem;
+  text-decoration: underline;
+}
+
+.logout-btn:hover {
+  color: #333;
+}
+
+@media (max-width: 768px) {
+  .task-container {
+    padding: 20px;
+  }
+
+  .task-header {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
+
+  .task-actions {
+    flex-direction: column;
+  }
+
+  .task-actions button {
+    width: 100%;
+  }
 }

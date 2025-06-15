@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Tasks from './pages/Task';
+import Lists from './pages/Lists';
 
 function App() {
   return (
@@ -10,6 +11,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/lists" element={<Lists />} />
         <Route path="/tasks" element={<Tasks />} />
       </Routes>
     </BrowserRouter>
