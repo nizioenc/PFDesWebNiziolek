@@ -50,6 +50,9 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   padding: 1.5rem;
   transition: transform 0.2s;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .foro-card:hover {
@@ -60,7 +63,7 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 .foro-card-header h3 {
@@ -79,20 +82,128 @@
 
 .foro-card p {
   color: #666;
-  margin: 0 0 1rem 0;
+  margin: 0;
   line-height: 1.5;
+  flex-grow: 1;
+}
+
+.rating-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+  border-top: 1px solid #eee;
+  border-bottom: 1px solid #eee;
+}
+
+.rating-display {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.rating-average {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.rating-count {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.user-rating {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.user-rating > span {
+  margin-bottom: 0.25rem;
+}
+
+.comment-input {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.comment-input textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  resize: vertical;
+  font-family: inherit;
+  font-size: 0.9rem;
+}
+
+.comment-input textarea:focus {
+  outline: none;
+  border-color: #555;
+}
+
+.comment-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.char-count {
+  color: #666;
+  font-size: 0.8rem;
+}
+
+.submit-comment-btn {
+  background-color: #555;
+  color: white;
+  border: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.3s;
+}
+
+.submit-comment-btn:hover {
+  background-color: #444;
 }
 
 .foro-card-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 1rem;
+  margin-top: auto;
 }
 
 .date-tag {
   color: #888;
   font-size: 0.9rem;
+}
+
+.card-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.view-ratings-btn {
+  background-color: #555;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.3s;
+}
+
+.view-ratings-btn:hover {
+  background-color: #444;
 }
 
 .view-tasks-btn {
@@ -136,7 +247,7 @@
 
 @media (max-width: 768px) {
   .foro-container {
-    padding: 20px;
+    padding: 1rem;
   }
 
   .foro-header {
@@ -147,5 +258,14 @@
 
   .foro-grid {
     grid-template-columns: 1fr;
+  }
+
+  .card-actions {
+    flex-direction: column;
+  }
+
+  .view-ratings-btn,
+  .view-tasks-btn {
+    width: 100%;
   }
 } 

@@ -1,23 +1,164 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import StarRating from '../components/StarRating';
+import RatingsModal from '../components/RatingsModal';
 import '../styles/ForoLists.css';
 
 const ForoLists = () => {
   const [publicLists, setPublicLists] = useState([]);
   const [token] = useState(localStorage.getItem('token'));
+  const [selectedList, setSelectedList] = useState(null);
+  const [ratings, setRatings] = useState([]);
+  const [averageRatings, setAverageRatings] = useState({});
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [userRatings, setUserRatings] = useState({});
+  const [userComments, setUserComments] = useState({});
+  const [showCommentInput, setShowCommentInput] = useState(null);
+  const [commentText, setCommentText] = useState('');
   const navigate = useNavigate();
-  const API_URL = 'http://localhost:5000/api/lists';
+  const API_URL = 'http://localhost:5000/api';
 
   const fetchPublicLists = async () => {
     try {
-      const res = await fetch(`${API_URL}/public`, {
+      const res = await fetch(`${API_URL}/lists/public`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await res.json();
       setPublicLists(data);
+      
+      // Obtener calificaciones promedio para cada lista
+      data.forEach(list => {
+        fetchAverageRating(list._id);
+        fetchUserRating(list._id);
+      });
     } catch (err) {
       console.error('Error al obtener listas públicas:', err);
     }
+  };
+
+  const fetchAverageRating = async (listId) => {
+    try {
+      const res = await fetch(`${API_URL}/ratings/list/${listId}/average`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await res.json();
+      setAverageRatings(prev => ({
+        ...prev,
+        [listId]: data
+      }));
+    } catch (err) {
+      console.error('Error al obtener calificación promedio:', err);
+    }
+  };
+
+  const fetchUserRating = async (listId) => {
+    try {
+      const res = await fetch(`${API_URL}/ratings/list/${listId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await res.json();
+      const userRating = data.find(rating => rating.userId._id === JSON.parse(atob(token.split('.')[1])).id);
+      if (userRating) {
+        setUserRatings(prev => ({
+          ...prev,
+          [listId]: userRating.rating
+        }));
+        setUserComments(prev => ({
+          ...prev,
+          [listId]: userRating.comment || ''
+        }));
+      }
+    } catch (err) {
+      console.error('Error al obtener calificación del usuario:', err);
+    }
+  };
+
+  const handleRating = async (listId, rating) => {
+    try {
+      const res = await fetch(`${API_URL}/ratings/list/${listId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ 
+          rating,
+          comment: userComments[listId] || ''
+        })
+      });
+
+      if (res.ok) {
+        setUserRatings(prev => ({
+          ...prev,
+          [listId]: rating
+        }));
+        fetchAverageRating(listId);
+        if (selectedList?._id === listId) {
+          fetchRatings(listId);
+        }
+        setShowCommentInput(listId);
+      } else {
+        const data = await res.json();
+        alert(data.error || 'Error al calificar la lista');
+      }
+    } catch (err) {
+      console.error('Error al calificar lista:', err);
+      alert('Error al calificar la lista');
+    }
+  };
+
+  const handleCommentChange = (listId, comment) => {
+    setUserComments(prev => ({
+      ...prev,
+      [listId]: comment
+    }));
+  };
+
+  const handleCommentSubmit = async (listId) => {
+    try {
+      const res = await fetch(`${API_URL}/ratings/list/${listId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ 
+          rating: userRatings[listId],
+          comment: userComments[listId]
+        })
+      });
+
+      if (res.ok) {
+        setShowCommentInput(null);
+        if (selectedList?._id === listId) {
+          fetchRatings(listId);
+        }
+      } else {
+        const data = await res.json();
+        alert(data.error || 'Error al guardar el comentario');
+      }
+    } catch (err) {
+      console.error('Error al guardar comentario:', err);
+      alert('Error al guardar el comentario');
+    }
+  };
+
+  const fetchRatings = async (listId) => {
+    try {
+      const res = await fetch(`${API_URL}/ratings/list/${listId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await res.json();
+      setRatings(data);
+    } catch (err) {
+      console.error('Error al obtener calificaciones:', err);
+    }
+  };
+
+  const openRatingsModal = async (list) => {
+    setSelectedList(list);
+    await fetchRatings(list._id);
+    setIsModalOpen(true);
   };
 
   useEffect(() => {
@@ -58,13 +199,71 @@ const ForoLists = () => {
               </span>
             </div>
             <p>{list.description}</p>
+            
+            <div className="rating-section">
+              <div className="rating-display">
+                <span className="rating-average">
+                  {averageRatings[list._id]?.average.toFixed(1) || '0.0'}
+                </span>
+                <StarRating 
+                  rating={Math.round(averageRatings[list._id]?.average || 0)} 
+                  readonly 
+                />
+                <span className="rating-count">
+                  ({averageRatings[list._id]?.count || 0})
+                </span>
+              </div>
+              
+              {list.userId._id !== JSON.parse(atob(token.split('.')[1])).id && (
+                <div className="user-rating">
+                  <span>Tu calificación:</span>
+                  <StarRating
+                    rating={userRatings[list._id] || 0}
+                    onRatingChange={(rating) => handleRating(list._id, rating)}
+                  />
+                  {showCommentInput === list._id && (
+                    <div className="comment-input">
+                      <textarea
+                        placeholder="Escribe un comentario (opcional)"
+                        value={userComments[list._id] || ''}
+                        onChange={(e) => handleCommentChange(list._id, e.target.value)}
+                        maxLength={500}
+                      />
+                      <div className="comment-actions">
+                        <span className="char-count">
+                          {userComments[list._id]?.length || 0}/500
+                        </span>
+                        <button 
+                          onClick={() => handleCommentSubmit(list._id)}
+                          className="submit-comment-btn"
+                        >
+                          Guardar
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
             <div className="foro-card-footer">
               <span className="date-tag">
                 {new Date(list.createdAt).toLocaleDateString()}
               </span>
-              <button onClick={() => viewTasks(list._id)} className="view-tasks-btn">
-                Ver Tareas
-              </button>
+              <div className="card-actions">
+                <button 
+                  onClick={() => openRatingsModal(list)} 
+                  className="view-ratings-btn"
+                >
+                  Ver Reseñas
+                </button>
+                <button 
+                  onClick={() => viewTasks(list._id)} 
+                  className="view-tasks-btn"
+                >
+                  Ver Tareas
+                </button>
+              </div>
             </div>
           </div>
         ))}
@@ -79,6 +278,14 @@ const ForoLists = () => {
       <button onClick={handleLogout} className="logout-btn">
         Cerrar sesión
       </button>
+
+      <RatingsModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        ratings={ratings}
+        averageRating={selectedList ? (averageRatings[selectedList._id]?.average || 0) : 0}
+        ratingCount={selectedList ? (averageRatings[selectedList._id]?.count || 0) : 0}
+      />
     </div>
   );
 };
