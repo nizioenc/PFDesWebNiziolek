@@ -54,7 +54,7 @@
 
 .back-btn {
   padding: 8px 16px;
-  background-color: #6c757d;
+  background-color: #4CAF50;
   color: white;
   border: none;
   border-radius: 4px;
@@ -63,7 +63,7 @@
 }
 
 .back-btn:hover {
-  background-color: #5a6268;
+  background-color: #45a049;
 }
 
 .task-form {
@@ -93,7 +93,7 @@
 .task-form button {
   width: 100%;
   padding: 12px;
-  background-color: #555;
+  background-color: #007bff;
   color: white;
   border: none;
   border-radius: 6px;
@@ -103,57 +103,48 @@
 }
 
 .task-form button:hover {
-  background-color: #444;
+  background-color: #0056b3;
 }
 
 .tasks-list {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
+  display: grid;
+  gap: 20px;
 }
 
 .task-card {
-  background: #fff;
-  border: 1px solid #e0e0e0;
+  background: white;
   border-radius: 8px;
   padding: 20px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.task-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
 }
 
 .task-card.completed {
   opacity: 0.7;
 }
 
-.task-card.completed h3 {
-  text-decoration: line-through;
-  color: #6c757d;
-}
-
 .task-content {
-  margin-bottom: 15px;
+  flex: 1;
 }
 
 .task-content h3 {
-  margin: 0 0 10px;
+  margin: 0 0 10px 0;
   color: #333;
 }
 
 .task-content p {
+  margin: 0 0 10px 0;
   color: #666;
-  margin: 0 0 10px;
 }
 
 .task-list-tag {
   display: inline-block;
+  background: #e3f2fd;
+  color: #1976d2;
   padding: 4px 8px;
-  background-color: #e9ecef;
-  color: #495057;
   border-radius: 4px;
   font-size: 0.9rem;
 }
@@ -161,45 +152,42 @@
 .task-actions {
   display: flex;
   gap: 10px;
-  flex-wrap: wrap;
 }
 
 .task-actions button {
-  flex: 1;
   padding: 8px 12px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   font-size: 0.9rem;
   transition: background-color 0.2s;
-  min-width: 100px;
 }
 
 .complete-btn {
-  background-color: #28a745;
+  background-color: #4CAF50;
   color: white;
 }
 
 .complete-btn:hover {
-  background-color: #218838;
+  background-color: #45a049;
 }
 
 .edit-btn {
-  background-color: #ffc107;
-  color: #000;
+  background-color: #4CAF50;
+  color: white;
 }
 
 .edit-btn:hover {
-  background-color: #e0a800;
+  background-color: #45a049;
 }
 
 .delete-btn {
-  background-color: #dc3545;
+  background-color: #f44336;
   color: white;
 }
 
 .delete-btn:hover {
-  background-color: #c82333;
+  background-color: #d32f2f;
 }
 
 .logout-btn {
@@ -223,13 +211,12 @@
     padding: 20px;
   }
 
-  .task-header {
+  .task-card {
     flex-direction: column;
-    gap: 15px;
-    text-align: center;
   }
 
   .task-actions {
+    width: 100%;
     flex-direction: column;
   }
 

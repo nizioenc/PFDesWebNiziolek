@@ -15,6 +15,10 @@ const listSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
+  isPublic: {
+    type: Boolean,
+    default: false
+  },
   createdAt: {
     type: Date,
     default: Date.now

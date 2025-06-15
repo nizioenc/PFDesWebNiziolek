@@ -1,0 +1,151 @@
+.foro-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.foro-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.foro-header h2 {
+  color: #333;
+  font-size: 2rem;
+  margin: 0;
+}
+
+.foro-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.back-btn {
+  background-color: #555;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s;
+}
+
+.back-btn:hover {
+  background-color: #444;
+}
+
+.foro-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.foro-card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  transition: transform 0.2s;
+}
+
+.foro-card:hover {
+  transform: translateY(-5px);
+}
+
+.foro-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.foro-card-header h3 {
+  margin: 0;
+  color: #333;
+  font-size: 1.2rem;
+}
+
+.author-tag {
+  background-color: #e3f2fd;
+  color: #1976d2;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.foro-card p {
+  color: #666;
+  margin: 0 0 1rem 0;
+  line-height: 1.5;
+}
+
+.foro-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.date-tag {
+  color: #888;
+  font-size: 0.9rem;
+}
+
+.view-tasks-btn {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.3s;
+}
+
+.view-tasks-btn:hover {
+  background-color: #45a049;
+}
+
+.no-lists {
+  text-align: center;
+  padding: 3rem;
+  background: #f5f5f5;
+  border-radius: 8px;
+  color: #666;
+}
+
+.logout-btn {
+  display: block;
+  margin: 2rem auto 0;
+  padding: 10px 20px;
+  background: transparent;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  font-size: 0.9rem;
+  text-decoration: underline;
+}
+
+.logout-btn:hover {
+  color: #333;
+}
+
+@media (max-width: 768px) {
+  .foro-container {
+    padding: 20px;
+  }
+
+  .foro-header {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+
+  .foro-grid {
+    grid-template-columns: 1fr;
+  }
+} 

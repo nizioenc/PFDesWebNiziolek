@@ -1,4 +1,5 @@
 const List = require('../models/List');
+const User = require('../models/User');
 
 exports.getLists = async (req, res) => {
   try {
@@ -6,6 +7,17 @@ exports.getLists = async (req, res) => {
     res.json(lists);
   } catch (err) {
     res.status(500).json({ error: 'Error al obtener las listas' });
+  }
+};
+
+exports.getPublicLists = async (req, res) => {
+  try {
+    const lists = await List.find({ isPublic: true })
+      .populate('userId', 'email')
+      .sort({ createdAt: -1 });
+    res.json(lists);
+  } catch (err) {
+    res.status(500).json({ error: 'Error al obtener las listas públicas' });
   }
 };
 
@@ -21,12 +33,26 @@ exports.getList = async (req, res) => {
   }
 };
 
+exports.getPublicList = async (req, res) => {
+  try {
+    const list = await List.findOne({ _id: req.params.id, isPublic: true })
+      .populate('userId', 'email');
+    if (!list) {
+      return res.status(404).json({ error: 'Lista no encontrada' });
+    }
+    res.json(list);
+  } catch (err) {
+    res.status(500).json({ error: 'Error al obtener la lista' });
+  }
+};
+
 exports.createList = async (req, res) => {
   try {
-    const { name, description } = req.body;
+    const { name, description, isPublic } = req.body;
     const newList = new List({
       name,
       description,
+      isPublic: isPublic || false,
       userId: req.user.id
     });
     await newList.save();
@@ -50,6 +76,24 @@ exports.updateList = async (req, res) => {
     res.json(updatedList);
   } catch (err) {
     res.status(500).json({ error: 'Error al actualizar la lista' });
+  }
+};
+
+exports.togglePublic = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const list = await List.findOne({ _id: id, userId: req.user.id });
+    
+    if (!list) {
+      return res.status(404).json({ error: 'Lista no encontrada' });
+    }
+
+    list.isPublic = !list.isPublic;
+    await list.save();
+    
+    res.json(list);
+  } catch (err) {
+    res.status(500).json({ error: 'Error al cambiar la visibilidad de la lista' });
   }
 };
 

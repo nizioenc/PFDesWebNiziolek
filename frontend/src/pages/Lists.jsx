@@ -4,7 +4,7 @@ import '../styles/Lists.css';
 
 const Lists = () => {
   const [lists, setLists] = useState([]);
-  const [formData, setFormData] = useState({ name: '', description: '' });
+  const [formData, setFormData] = useState({ name: '', description: '', isPublic: false });
   const [editingListId, setEditingListId] = useState(null);
   const [token] = useState(localStorage.getItem('token'));
 
@@ -28,7 +28,8 @@ const Lists = () => {
   }, []);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+    setFormData({ ...formData, [e.target.name]: value });
   };
 
   const handleSubmit = async (e) => {
@@ -48,7 +49,7 @@ const Lists = () => {
       });
 
       if (res.ok) {
-        setFormData({ name: '', description: '' });
+        setFormData({ name: '', description: '', isPublic: false });
         setEditingListId(null);
         fetchLists();
       }
@@ -72,12 +73,20 @@ const Lists = () => {
   };
 
   const startEdit = (list) => {
-    setFormData({ name: list.name, description: list.description });
+    setFormData({ 
+      name: list.name, 
+      description: list.description,
+      isPublic: list.isPublic || false 
+    });
     setEditingListId(list._id);
   };
 
   const viewTasks = (listId) => {
     navigate(`/tasks?listId=${listId}`);
+  };
+
+  const goToForo = () => {
+    navigate('/foro');
   };
 
   const handleLogout = () => {
@@ -87,8 +96,15 @@ const Lists = () => {
 
   return (
     <div className="lists-container">
+      <div className="lists-header">
+        <h2>Mis Listas</h2>
+        <button onClick={goToForo} className="foro-btn">
+          Ver Foro de Listas
+        </button>
+      </div>
+
       <form className="lists-form" onSubmit={handleSubmit}>
-        <h2>{editingListId ? 'Editar Lista' : 'Nueva Lista'}</h2>
+        <h3>{editingListId ? 'Editar Lista' : 'Nueva Lista'}</h3>
         <input
           name="name"
           placeholder="Nombre de la lista"
@@ -102,6 +118,17 @@ const Lists = () => {
           value={formData.description}
           onChange={handleChange}
         />
+        <div className="public-option">
+          <label>
+            <input
+              type="checkbox"
+              name="isPublic"
+              checked={formData.isPublic}
+              onChange={handleChange}
+            />
+            Hacer pública esta lista
+          </label>
+        </div>
         <button type="submit">
           {editingListId ? 'Actualizar' : 'Crear Lista'}
         </button>
@@ -110,7 +137,10 @@ const Lists = () => {
       <div className="lists-grid">
         {lists.map((list) => (
           <div key={list._id} className="list-card">
-            <h3>{list.name}</h3>
+            <div className="list-header">
+              <h3>{list.name}</h3>
+              {list.isPublic && <span className="public-tag">Pública</span>}
+            </div>
             <p>{list.description}</p>
             <div className="list-actions">
               <button onClick={() => viewTasks(list._id)} className="view-tasks-btn">
