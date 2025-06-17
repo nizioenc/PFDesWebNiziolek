@@ -1,111 +1,118 @@
-const List = require('../models/List');
-const User = require('../models/User');
+const listService = require('../services/listService');
 
 exports.getLists = async (req, res) => {
   try {
-    const lists = await List.find({ userId: req.user.id });
-    res.json(lists);
+    const result = await listService.getLists(req.user.id);
+    
+    if (!result.success) {
+      return res.status(400).json({ error: result.error });
+    }
+    
+    res.json(result.data);
   } catch (err) {
-    res.status(500).json({ error: 'Error al obtener las listas' });
+    res.status(500).json({ error: 'Error interno del servidor' });
   }
 };
 
 exports.getPublicLists = async (req, res) => {
   try {
-    const lists = await List.find({ isPublic: true })
-      .populate('userId', 'email')
-      .sort({ createdAt: -1 });
-    res.json(lists);
+    const result = await listService.getPublicLists();
+    
+    if (!result.success) {
+      return res.status(400).json({ error: result.error });
+    }
+    
+    res.json(result.data);
   } catch (err) {
-    res.status(500).json({ error: 'Error al obtener las listas públicas' });
+    res.status(500).json({ error: 'Error interno del servidor' });
   }
 };
 
 exports.getList = async (req, res) => {
   try {
-    const list = await List.findOne({ _id: req.params.id, userId: req.user.id });
-    if (!list) {
-      return res.status(404).json({ error: 'Lista no encontrada' });
+    const { id } = req.params;
+    const result = await listService.getList(id, req.user.id);
+    
+    if (!result.success) {
+      return res.status(404).json({ error: result.error });
     }
-    res.json(list);
+    
+    res.json(result.data);
   } catch (err) {
-    res.status(500).json({ error: 'Error al obtener la lista' });
+    res.status(500).json({ error: 'Error interno del servidor' });
   }
 };
 
 exports.getPublicList = async (req, res) => {
   try {
-    const list = await List.findOne({ _id: req.params.id, isPublic: true })
-      .populate('userId', 'email');
-    if (!list) {
-      return res.status(404).json({ error: 'Lista no encontrada' });
+    const { id } = req.params;
+    const result = await listService.getPublicList(id);
+    
+    if (!result.success) {
+      return res.status(404).json({ error: result.error });
     }
-    res.json(list);
+    
+    res.json(result.data);
   } catch (err) {
-    res.status(500).json({ error: 'Error al obtener la lista' });
+    res.status(500).json({ error: 'Error interno del servidor' });
   }
 };
 
 exports.createList = async (req, res) => {
   try {
-    const { name, description, isPublic } = req.body;
-    const newList = new List({
-      name,
-      description,
-      isPublic: isPublic || false,
-      userId: req.user.id
-    });
-    await newList.save();
-    res.status(201).json(newList);
+    const result = await listService.createList(req.body, req.user.id);
+    
+    if (!result.success) {
+      return res.status(400).json({ error: result.error });
+    }
+    
+    res.status(201).json(result.data);
   } catch (err) {
-    res.status(500).json({ error: 'Error al crear la lista' });
+    res.status(500).json({ error: 'Error interno del servidor' });
   }
 };
 
 exports.updateList = async (req, res) => {
   try {
     const { id } = req.params;
-    const updatedList = await List.findOneAndUpdate(
-      { _id: id, userId: req.user.id },
-      req.body,
-      { new: true }
-    );
-    if (!updatedList) {
-      return res.status(404).json({ error: 'Lista no encontrada' });
+    const result = await listService.updateList(id, req.body, req.user.id);
+    
+    if (!result.success) {
+      return res.status(404).json({ error: result.error });
     }
-    res.json(updatedList);
+    
+    res.json(result.data);
   } catch (err) {
-    res.status(500).json({ error: 'Error al actualizar la lista' });
+    res.status(500).json({ error: 'Error interno del servidor' });
   }
 };
 
 exports.togglePublic = async (req, res) => {
   try {
     const { id } = req.params;
-    const list = await List.findOne({ _id: id, userId: req.user.id });
+    const result = await listService.togglePublic(id, req.user.id);
     
-    if (!list) {
-      return res.status(404).json({ error: 'Lista no encontrada' });
+    if (!result.success) {
+      return res.status(404).json({ error: result.error });
     }
-
-    list.isPublic = !list.isPublic;
-    await list.save();
     
-    res.json(list);
+    res.json(result.data);
   } catch (err) {
-    res.status(500).json({ error: 'Error al cambiar la visibilidad de la lista' });
+    res.status(500).json({ error: 'Error interno del servidor' });
   }
 };
 
 exports.deleteList = async (req, res) => {
   try {
     const { id } = req.params;
-    const deletedList = await List.findOneAndDelete({ _id: id, userId: req.user.id });
-    if (!deletedList) {
-      return res.status(404).json({ error: 'Lista no encontrada' });
+    const result = await listService.deleteList(id, req.user.id);
+    
+    if (!result.success) {
+      return res.status(404).json({ error: result.error });
     }
-    res.json({ message: 'Lista eliminada' });
+    
+    res.json({ message: result.message });
   } catch (err) {
-    res.status(500).json({ error: 'Error al eliminar la lista' });
+    res.status(500).json({ error: 'Error interno del servidor' });
   }
 }; 

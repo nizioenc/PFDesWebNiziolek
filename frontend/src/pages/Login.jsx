@@ -26,7 +26,7 @@ const Login = ({ onLogin }) => {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.message || 'Credenciales incorrectas');
+        setError(data.error || 'Credenciales incorrectas');
       } else {
         localStorage.setItem('token', data.token);
         onLogin && onLogin();

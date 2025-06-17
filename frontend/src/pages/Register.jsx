@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import '../styles/Register.css';
 
 const Register = () => {
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -20,19 +21,24 @@ const Register = () => {
       return;
     }
 
+    if (username.length < 3) {
+      setError('El nombre de usuario debe tener al menos 3 caracteres');
+      return;
+    }
+
     try {
       const res = await fetch('http://localhost:5000/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ username, email, password }),
       });
 
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.message || 'Error al registrar');
+        setError(data.error || 'Error al registrar');
       } else {
-      navigate('/', { state: { successMessage: 'Usuario registrado correctamente' } });
+        navigate('/', { state: { successMessage: 'Usuario registrado correctamente' } });
       }
     } catch (err) {
       setError('Error de conexión con el servidor');
@@ -48,6 +54,16 @@ const Register = () => {
         {error && <div className="error">{error}</div>}
 
         <input
+          type="text"
+          placeholder="Nombre de usuario"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          required
+          minLength={3}
+          maxLength={30}
+        />
+
+        <input
           type="email"
           placeholder="Correo electrónico"
           value={email}
@@ -61,22 +77,23 @@ const Register = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
+          minLength={6}
         />
 
         <input
           type="password"
-          placeholder="Repetir contraseña"
+          placeholder="Confirmar contraseña"
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
           required
         />
 
         <button type="submit">Registrarse</button>
-
-        <p className="switch-text">
-          ¿Ya tienes una cuenta? <Link to="/">Inicia sesión</Link>
-        </p>
       </form>
+
+      <div className="switch-text">
+        ¿Ya tienes cuenta? <Link to="/">Iniciar sesión</Link>
+      </div>
     </div>
   );
 };

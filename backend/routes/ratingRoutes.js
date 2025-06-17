@@ -3,16 +3,16 @@ const router = express.Router();
 const ratingController = require('../controllers/ratingController');
 const authMiddleware = require('../middleware/authMiddleware');
 
-// Todas las rutas requieren autenticación
+// Aplicar middleware de autenticación a todas las rutas
 router.use(authMiddleware);
 
-// Obtener calificaciones de una lista
+// Rutas específicas de listas (deben ir antes que las rutas con parámetros)
 router.get('/list/:listId', ratingController.getListRatings);
-
-// Obtener promedio de calificaciones de una lista
 router.get('/list/:listId/average', ratingController.getListAverageRating);
-
-// Crear o actualizar una calificación
 router.post('/list/:listId', ratingController.rateList);
+
+// Rutas de calificaciones individuales
+router.put('/:id', ratingController.updateRating);
+router.delete('/:id', ratingController.deleteRating);
 
 module.exports = router; 

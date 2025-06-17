@@ -1,63 +1,75 @@
-const Task = require('../models/Task');
+const taskService = require('../services/taskService');
 
 exports.getTasks = async (req, res) => {
   try {
     const { listId } = req.query;
-    const query = { userId: req.user.id };
+    const result = await taskService.getTasks(req.user.id, listId);
     
-    if (listId) {
-      query.listId = listId;
+    if (!result.success) {
+      return res.status(400).json({ error: result.error });
     }
     
-    const tasks = await Task.find(query);
-    res.json(tasks);
+    res.json(result.data);
   } catch (err) {
-    res.status(500).json({ error: 'Error al obtener las tareas' });
+    res.status(500).json({ error: 'Error interno del servidor' });
   }
 };
 
 exports.createTask = async (req, res) => {
   try {
-    const { title, description, listId } = req.body;
-    const newTask = new Task({
-      title,
-      description,
-      listId,
-      userId: req.user.id
-    });
-    await newTask.save();
-    res.status(201).json(newTask);
+    const result = await taskService.createTask(req.body, req.user.id);
+    
+    if (!result.success) {
+      return res.status(400).json({ error: result.error });
+    }
+    
+    res.status(201).json(result.data);
   } catch (err) {
-    res.status(500).json({ error: 'Error al crear la tarea' });
+    res.status(500).json({ error: 'Error interno del servidor' });
   }
 };
 
 exports.updateTask = async (req, res) => {
   try {
     const { id } = req.params;
-    const updatedTask = await Task.findOneAndUpdate(
-      { _id: id, userId: req.user.id },
-      req.body,
-      { new: true }
-    );
-    if (!updatedTask) {
-      return res.status(404).json({ error: 'Tarea no encontrada' });
+    const result = await taskService.updateTask(id, req.body, req.user.id);
+    
+    if (!result.success) {
+      return res.status(404).json({ error: result.error });
     }
-    res.json(updatedTask);
+    
+    res.json(result.data);
   } catch (err) {
-    res.status(500).json({ error: 'Error al actualizar la tarea' });
+    res.status(500).json({ error: 'Error interno del servidor' });
   }
 };
 
 exports.deleteTask = async (req, res) => {
   try {
     const { id } = req.params;
-    const deletedTask = await Task.findOneAndDelete({ _id: id, userId: req.user.id });
-    if (!deletedTask) {
-      return res.status(404).json({ error: 'Tarea no encontrada' });
+    const result = await taskService.deleteTask(id, req.user.id);
+    
+    if (!result.success) {
+      return res.status(404).json({ error: result.error });
     }
-    res.json({ message: 'Tarea eliminada' });
+    
+    res.json({ message: result.message });
   } catch (err) {
-    res.status(500).json({ error: 'Error al eliminar la tarea' });
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+};
+
+exports.toggleTaskComplete = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await taskService.toggleTaskComplete(id, req.user.id);
+    
+    if (!result.success) {
+      return res.status(404).json({ error: result.error });
+    }
+    
+    res.json(result.data);
+  } catch (err) {
+    res.status(500).json({ error: 'Error interno del servidor' });
   }
 };

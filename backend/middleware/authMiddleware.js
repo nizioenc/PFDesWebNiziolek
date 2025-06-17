@@ -1,14 +1,23 @@
-const jwt = require('jsonwebtoken');
+const authService = require('../services/authService');
 
 module.exports = (req, res, next) => {
-  const token = req.headers.authorization?.split(' ')[1];
-  if (!token) return res.status(401).json({ error: 'No autorizado' });
-
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
+    const token = req.headers.authorization?.split(' ')[1];
+    
+    if (!token) {
+      return res.status(401).json({ error: 'Token de acceso requerido' });
+    }
+
+    const result = authService.verifyToken(token);
+    
+    if (!result.success) {
+      return res.status(401).json({ error: result.error });
+    }
+
+    req.user = result.data;
     next();
-  } catch (err) {
+  } catch (error) {
+    console.error('Error en middleware de autenticación:', error);
     res.status(401).json({ error: 'Token inválido' });
   }
 };

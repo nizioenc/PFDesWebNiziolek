@@ -20,7 +20,7 @@ const ForoLists = () => {
 
   const fetchPublicLists = async () => {
     try {
-      const res = await fetch(`${API_URL}/lists/public`, {
+      const res = await fetch(`${API_URL}/public/lists`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await res.json();
@@ -41,11 +41,16 @@ const ForoLists = () => {
       const res = await fetch(`${API_URL}/ratings/list/${listId}/average`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      const data = await res.json();
-      setAverageRatings(prev => ({
-        ...prev,
-        [listId]: data
-      }));
+      
+      if (res.ok) {
+        const data = await res.json();
+        setAverageRatings(prev => ({
+          ...prev,
+          [listId]: data
+        }));
+      } else {
+        console.error('Error al obtener calificación promedio:', res.status);
+      }
     } catch (err) {
       console.error('Error al obtener calificación promedio:', err);
     }
@@ -87,18 +92,22 @@ const ForoLists = () => {
         })
       });
 
+      const data = await res.json();
+
       if (res.ok) {
         setUserRatings(prev => ({
           ...prev,
           [listId]: rating
         }));
-        fetchAverageRating(listId);
+        
+        // Actualizar inmediatamente el promedio
+        await fetchAverageRating(listId);
+        
         if (selectedList?._id === listId) {
           fetchRatings(listId);
         }
         setShowCommentInput(listId);
       } else {
-        const data = await res.json();
         alert(data.error || 'Error al calificar la lista');
       }
     } catch (err) {
@@ -123,10 +132,12 @@ const ForoLists = () => {
           Authorization: `Bearer ${token}`
         },
         body: JSON.stringify({ 
-          rating: userRatings[listId],
+          rating: userRatings[listId] || 1,
           comment: userComments[listId]
         })
       });
+
+      const data = await res.json();
 
       if (res.ok) {
         setShowCommentInput(null);
@@ -134,7 +145,6 @@ const ForoLists = () => {
           fetchRatings(listId);
         }
       } else {
-        const data = await res.json();
         alert(data.error || 'Error al guardar el comentario');
       }
     } catch (err) {
@@ -189,61 +199,63 @@ const ForoLists = () => {
         </div>
       </div>
 
-      <div className="foro-grid">
-        {publicLists.map((list) => (
+      <div className="foro-lists">
+        {publicLists.map(list => (
           <div key={list._id} className="foro-card">
             <div className="foro-card-header">
               <h3>{list.name}</h3>
-              <span className="author-tag">
-                Por: {list.userId.email}
-              </span>
+              <span className="author">por {list.userId?.username || 'Usuario'}</span>
             </div>
-            <p>{list.description}</p>
-            
-            <div className="rating-section">
-              <div className="rating-display">
-                <span className="rating-average">
-                  {averageRatings[list._id]?.average.toFixed(1) || '0.0'}
-                </span>
-                <StarRating 
-                  rating={Math.round(averageRatings[list._id]?.average || 0)} 
-                  readonly 
-                />
-                <span className="rating-count">
-                  ({averageRatings[list._id]?.count || 0})
-                </span>
-              </div>
+
+            <div className="foro-card-body">
+              <p className="description">{list.description || 'Sin descripción'}</p>
               
-              {list.userId._id !== JSON.parse(atob(token.split('.')[1])).id && (
-                <div className="user-rating">
-                  <span>Tu calificación:</span>
-                  <StarRating
-                    rating={userRatings[list._id] || 0}
-                    onRatingChange={(rating) => handleRating(list._id, rating)}
+              <div className="rating-section">
+                <div className="average-rating">
+                  <span>Calificación promedio:</span>
+                  <StarRating 
+                    rating={averageRatings[list._id]?.average || 0} 
+                    readonly={true}
                   />
-                  {showCommentInput === list._id && (
-                    <div className="comment-input">
-                      <textarea
-                        placeholder="Escribe un comentario (opcional)"
-                        value={userComments[list._id] || ''}
-                        onChange={(e) => handleCommentChange(list._id, e.target.value)}
-                        maxLength={500}
-                      />
-                      <div className="comment-actions">
-                        <span className="char-count">
-                          {userComments[list._id]?.length || 0}/500
-                        </span>
-                        <button 
-                          onClick={() => handleCommentSubmit(list._id)}
-                          className="submit-comment-btn"
-                        >
-                          Guardar
-                        </button>
-                      </div>
-                    </div>
-                  )}
+                  <span className="rating-average-number">
+                    {averageRatings[list._id]?.average?.toFixed(1) || '0.0'}
+                  </span>
+                  <span className="rating-count">
+                    ({averageRatings[list._id]?.count || 0} reseñas)
+                  </span>
                 </div>
-              )}
+
+                {list.userId._id !== JSON.parse(atob(token.split('.')[1])).id && (
+                  <div className="user-rating">
+                    <span>Tu calificación:</span>
+                    <StarRating
+                      rating={userRatings[list._id] || 0}
+                      onRatingChange={(rating) => handleRating(list._id, rating)}
+                    />
+                    {showCommentInput === list._id && (
+                      <div className="comment-input">
+                        <textarea
+                          placeholder="Escribe un comentario (opcional)"
+                          value={userComments[list._id] || ''}
+                          onChange={(e) => handleCommentChange(list._id, e.target.value)}
+                          maxLength={500}
+                        />
+                        <div className="comment-actions">
+                          <span className="char-count">
+                            {userComments[list._id]?.length || 0}/500
+                          </span>
+                          <button 
+                            onClick={() => handleCommentSubmit(list._id)}
+                            className="submit-comment-btn"
+                          >
+                            Guardar
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="foro-card-footer">
