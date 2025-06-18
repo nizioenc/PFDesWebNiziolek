@@ -26,10 +26,8 @@ const ratingSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Índice compuesto para asegurar que un usuario solo pueda calificar una lista una vez
 ratingSchema.index({ list: 1, user: 1 }, { unique: true });
 
-// Índice adicional para ordenar las calificaciones por fecha de creación
 ratingSchema.index({ list: 1, createdAt: -1 });
 
 module.exports = mongoose.model('Rating', ratingSchema); 

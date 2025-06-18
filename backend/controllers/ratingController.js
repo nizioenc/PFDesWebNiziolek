@@ -1,6 +1,5 @@
 const ratingService = require('../services/ratingService');
 
-// Obtener todas las calificaciones de una lista
 exports.getListRatings = async (req, res) => {
   try {
     const { listId } = req.params;
@@ -16,7 +15,6 @@ exports.getListRatings = async (req, res) => {
   }
 };
 
-// Crear una calificación
 exports.rateList = async (req, res) => {
   try {
     const { listId } = req.params;
@@ -32,7 +30,6 @@ exports.rateList = async (req, res) => {
   }
 };
 
-// Actualizar una calificación
 exports.updateRating = async (req, res) => {
   try {
     const { id } = req.params;
@@ -48,7 +45,6 @@ exports.updateRating = async (req, res) => {
   }
 };
 
-// Eliminar una calificación
 exports.deleteRating = async (req, res) => {
   try {
     const { id } = req.params;
@@ -64,7 +60,6 @@ exports.deleteRating = async (req, res) => {
   }
 };
 
-// Obtener el promedio de calificaciones de una lista
 exports.getListAverageRating = async (req, res) => {
   try {
     const { listId } = req.params;

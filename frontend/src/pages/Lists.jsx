@@ -82,7 +82,7 @@ const Lists = () => {
   };
 
   const viewTasks = (listId) => {
-    navigate(`/tasks?listId=${listId}`);
+    navigate(`/tasks/${listId}`);
   };
 
   const goToForo = () => {

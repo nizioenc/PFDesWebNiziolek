@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import '../styles/Task.css';
 
 const Task = () => {
@@ -11,9 +11,7 @@ const Task = () => {
   const [token] = useState(localStorage.getItem('token'));
 
   const navigate = useNavigate();
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const listIdFromUrl = queryParams.get('listId');
+  const { listId } = useParams();
 
   const API_URL = 'http://localhost:5000/api';
   const TASKS_URL = `${API_URL}/tasks`;
@@ -27,9 +25,8 @@ const Task = () => {
       const data = await res.json();
       setLists(data);
       
-      // Si hay un listId en la URL, establecer esa lista como actual
-      if (listIdFromUrl) {
-        const selectedList = data.find(list => list._id === listIdFromUrl);
+      if (listId) {
+        const selectedList = data.find(list => list._id === listId);
         if (selectedList) {
           setCurrentList(selectedList);
           setFormData(prev => ({ ...prev, listId: selectedList._id }));
@@ -65,6 +62,19 @@ const Task = () => {
       fetchTasks();
     }
   }, [currentList, lists]);
+
+  useEffect(() => {
+    if (editingTaskId && lists.length > 0) {
+      const task = tasks.find(t => t._id === editingTaskId);
+      if (task && task.listId) {
+        const taskList = lists.find(list => list._id === task.listId);
+        if (taskList) {
+          setCurrentList(taskList);
+          setFormData(prev => ({ ...prev, listId: taskList._id }));
+        }
+      }
+    }
+  }, [editingTaskId, lists, tasks]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -133,11 +143,20 @@ const Task = () => {
   };
 
   const startEdit = (task) => {
+    console.log('Editando tarea:', task);
+    const taskList = lists.find(list => list._id === task.listId);
+    console.log('Lista encontrada:', taskList);
+    
     setFormData({ 
       title: task.title, 
       description: task.description,
-      listId: task.listId || ''
+      listId: task.listId
     });
+    
+    if (taskList) {
+      setCurrentList(taskList);
+    }
+    
     setEditingTaskId(task._id);
   };
 
@@ -161,19 +180,21 @@ const Task = () => {
 
       <form className="task-form" onSubmit={handleSubmit}>
         <h3>{editingTaskId ? 'Editar Tarea' : 'Nueva Tarea'}</h3>
-        <select
-          name="listId"
-          value={formData.listId}
-          onChange={handleListChange}
-          required
-        >
-          <option value="">Seleccionar lista</option>
-          {lists.map(list => (
-            <option key={list._id} value={list._id}>
-              {list.name}
-            </option>
-          ))}
-        </select>
+        {!editingTaskId && (
+          <select
+            name="listId"
+            value={formData.listId || ''}
+            onChange={handleListChange}
+            required
+          >
+            <option value="">Seleccionar lista</option>
+            {lists.map(list => (
+              <option key={list._id} value={list._id}>
+                {list.name}
+              </option>
+            ))}
+          </select>
+        )}
         <input
           name="title"
           placeholder="Título"

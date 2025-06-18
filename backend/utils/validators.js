@@ -68,4 +68,48 @@ class Validators {
   }
 }
 
-module.exports = Validators; 
+const validateRegistration = (userData) => {
+  const { username, email, password } = userData;
+
+  if (!username || !email || !password) {
+    return { isValid: false, error: 'Todos los campos son requeridos' };
+  }
+
+  if (!Validators.validateUsername(username)) {
+    return { isValid: false, error: 'El nombre de usuario debe tener entre 3 y 30 caracteres' };
+  }
+
+  if (!Validators.validateEmail(email)) {
+    return { isValid: false, error: 'El email no es válido' };
+  }
+
+  if (!Validators.validatePassword(password)) {
+    return { isValid: false, error: 'La contraseña debe tener al menos 6 caracteres' };
+  }
+
+  return { isValid: true };
+};
+
+const validateLogin = (credentials) => {
+  const { email, password } = credentials;
+
+  if (!email || !password) {
+    return { isValid: false, error: 'Email y contraseña son requeridos' };
+  }
+
+  if (!Validators.validateEmail(email)) {
+    return { isValid: false, error: 'El email no es válido' };
+  }
+
+  if (!Validators.validatePassword(password)) {
+    return { isValid: false, error: 'La contraseña debe tener al menos 6 caracteres' };
+  }
+
+  return { isValid: true };
+};
+
+module.exports = {
+  Validators,
+  validateRegistration,
+  validateLogin
+}; 

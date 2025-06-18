@@ -26,7 +26,6 @@ const ForoLists = () => {
       const data = await res.json();
       setPublicLists(data);
       
-      // Obtener calificaciones promedio para cada lista
       data.forEach(list => {
         fetchAverageRating(list._id);
         fetchUserRating(list._id);
@@ -100,7 +99,6 @@ const ForoLists = () => {
           [listId]: rating
         }));
         
-        // Actualizar inmediatamente el promedio
         await fetchAverageRating(listId);
         
         if (selectedList?._id === listId) {
@@ -185,7 +183,7 @@ const ForoLists = () => {
   };
 
   const viewTasks = (listId) => {
-    navigate(`/tasks?listId=${listId}`);
+    navigate(`/public-tasks/${listId}`);
   };
 
   return (
@@ -204,7 +202,7 @@ const ForoLists = () => {
           <div key={list._id} className="foro-card">
             <div className="foro-card-header">
               <h3>{list.name}</h3>
-              <span className="author">por {list.userId?.username || 'Usuario'}</span>
+              <span className="author">por {list.user?.username || 'Usuario'}</span>
             </div>
 
             <div className="foro-card-body">
@@ -225,7 +223,7 @@ const ForoLists = () => {
                   </span>
                 </div>
 
-                {list.userId._id !== JSON.parse(atob(token.split('.')[1])).id && (
+                {list.user?._id && list.user._id !== JSON.parse(atob(token.split('.')[1])).id && (
                   <div className="user-rating">
                     <span>Tu calificación:</span>
                     <StarRating
@@ -256,23 +254,12 @@ const ForoLists = () => {
                   </div>
                 )}
               </div>
-            </div>
 
-            <div className="foro-card-footer">
-              <span className="date-tag">
-                {new Date(list.createdAt).toLocaleDateString()}
-              </span>
-              <div className="card-actions">
-                <button 
-                  onClick={() => openRatingsModal(list)} 
-                  className="view-ratings-btn"
-                >
+              <div className="foro-card-actions">
+                <button onClick={() => openRatingsModal(list)} className="view-ratings-btn">
                   Ver Reseñas
                 </button>
-                <button 
-                  onClick={() => viewTasks(list._id)} 
-                  className="view-tasks-btn"
-                >
+                <button onClick={() => viewTasks(list._id)} className="view-tasks-btn">
                   Ver Tareas
                 </button>
               </div>
@@ -287,17 +274,18 @@ const ForoLists = () => {
         </div>
       )}
 
+      {isModalOpen && selectedList && (
+        <RatingsModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          ratings={ratings}
+          listName={selectedList.name}
+        />
+      )}
+
       <button onClick={handleLogout} className="logout-btn">
         Cerrar sesión
       </button>
-
-      <RatingsModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        ratings={ratings}
-        averageRating={selectedList ? (averageRatings[selectedList._id]?.average || 0) : 0}
-        ratingCount={selectedList ? (averageRatings[selectedList._id]?.count || 0) : 0}
-      />
     </div>
   );
 };

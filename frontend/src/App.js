@@ -6,6 +6,7 @@ import Register from './pages/Register';
 import Lists from './pages/Lists';
 import Task from './pages/Task';
 import ForoLists from './pages/ForoLists';
+import PublicTasks from './pages/PublicTasks';
 
 function App() {
   const isAuthenticated = () => {
@@ -38,8 +39,16 @@ function App() {
               </PrivateRoute>
             } 
           />
+          <Route 
+            path="/public-tasks/:listId" 
+            element={
+              <PrivateRoute>
+                <PublicTasks />
+              </PrivateRoute>
+            } 
+          />
           <Route path="/foro" element={<ForoLists />} />
-          <Route path="/" element={<Navigate to="/lists" />} />
+          <Route path="/" element={<Navigate to="/login" />} />
         </Routes>
       </div>
     </Router>

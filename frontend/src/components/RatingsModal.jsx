@@ -2,14 +2,17 @@ import React from 'react';
 import StarRating from './StarRating';
 import '../styles/RatingsModal.css';
 
-const RatingsModal = ({ isOpen, onClose, ratings, averageRating, ratingCount }) => {
+const RatingsModal = ({ isOpen, onClose, ratings, listName }) => {
   if (!isOpen) return null;
+
+  const averageRating = ratings.reduce((acc, curr) => acc + curr.rating, 0) / (ratings.length || 1);
+  const ratingCount = ratings.length;
 
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={e => e.stopPropagation()}>
         <div className="modal-header">
-          <h3>Reseñas de la Lista</h3>
+          <h3>Reseñas de {listName}</h3>
           <button className="close-button" onClick={onClose}>&times;</button>
         </div>
         
@@ -28,7 +31,9 @@ const RatingsModal = ({ isOpen, onClose, ratings, averageRating, ratingCount }) 
             ratings.map((rating) => (
               <div key={rating._id} className="rating-item">
                 <div className="rating-user">
-                  <span className="user-email">{rating.userId.email}</span>
+                  <span className="username">
+                    {rating.user?.username || rating.userId?.username || 'Usuario'}
+                  </span>
                   <span className="rating-date">
                     {new Date(rating.createdAt).toLocaleDateString()}
                   </span>

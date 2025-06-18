@@ -1,6 +1,6 @@
 .login-container {
-  width: 90vw;          /* Ocupa 90% del ancho de la pantalla */
-  max-width: 700px;     /* Máximo ancho para que no sea gigante en pantallas grandes */
+  width: 90vw;
+  max-width: 700px;
   min-height: 80vh;    
   margin: 20px auto;   
   padding: 30px 40px;  
@@ -13,7 +13,6 @@
   box-sizing: border-box;
 }
 
-/* Opcional: inputs y botones más grandes para tablet */
 .login-form input,
 .login-form button {
   font-size: 1.1rem;
@@ -23,7 +22,6 @@
   border: 1px solid #ccc;
 }
 
-/* Ajusta el botón de logout también */
 .login-container > button {
   font-size: 1rem;
   padding: 10px 0;
